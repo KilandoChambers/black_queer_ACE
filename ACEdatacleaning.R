@@ -1,27 +1,22 @@
-library(foreign)
-getwd()
-setwd("C:/Users/kiloc/Documents/R")
-getwd()
-mydata <- read.xport("C:/Users/kiloc/Documents/R/LLCP2020XPT/LLCP2020.XPT")
 View(mydata)
 nrow(mydata)
 mydata2 <- mydata[ ,c("ACEDEPRS", "ACEDRINK", "ACEPRISN", "ACEDIVRC",
                      "ACEPUNCH", "ACEHURT1", "ACESWEAR", "ACETOUCH", "ACETTHEM", "ACEDRUGS",
                      "ACEHVSEX", "SOMALE","SOFEMALE", "X_URBSTAT", "X_RACE")] #gathering variables that I want for the research project
-mydatablack <- mydata2[mydata$X_RACE == 2, ]
+mydatablack <- mydata2[mydata$X_RACE == 2, ] #selecting only black participants for study
 View(mydatablack)
 nrow(mydatablack)
-mydatablack$SOMALE[is.na(mydatablack$SOMALE)] <- 0
+mydatablack$SOMALE[is.na(mydatablack$SOMALE)] <- 0 #replacing na for sexual orientation question
 mydatablack$SOFEMALE[is.na(mydatablack$SOFEMALE)] <- 0
 nrow(mydatablack)
-mydatablack[12:13][mydatablack[12:13]== 2 | mydatablack[12:13] == 7 | mydatablack[12:13] == 9] <- 0
+mydatablack[12:13][mydatablack[12:13]== 2 | mydatablack[12:13] == 7 | mydatablack[12:13] == 9] <- 0 #putting all queer responses into a 'no/yes' category
 mydatablack[12:13][mydatablack[12:13]== 1 | mydatablack[12:13] == 3 | mydatablack[12:13] == 4] <- 1
 
 mydatablack$Queer = vector(mode = "numeric", nrow(mydatablack))
 
 for (j in 1:30131){
   mydatablack$Queer[j] <- sum(mydatablack[j,12:13])
-}
+} #creating singular queer category regardless of gender
 
 View(mydatablack)
 
@@ -30,8 +25,10 @@ mydatablack <- na.omit(mydatablack)
 table(mydatablack$Queer)
 
 nrow(mydatablack)
+#restructuring dataframe
 mydatabq <- mydatablack[, c(1:11,14,16)]
 colnames(mydatabq)
+#restructing ACE scores
 mydatabq[1:5][mydatabq[1:5] >= 2] <- 0
 mydatabq[10][mydatabq[10] >= 2] <- 0
 
@@ -81,9 +78,9 @@ mydatabq$ACETOTAL2 = vector(mode = 'numeric', nrow(mydatabq))
 for (j in 1:11301){
   mydatabq$ACETOTAL2[j] <- sum(mydatabq[j,c(15:17)])
 }
-
+#creating new CSV for cleaned data
 write.csv(finishdata,"C:/Users/kiloc/Documents/R/finaldata.csv", row.names = FALSE)
-
+#descriptive stats
 finishdata <- mydatabq[,12:17]
 View(finishdata)
 finishdata$Queer <- as.numeric(finishdata$Queer)
